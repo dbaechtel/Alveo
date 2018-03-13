@@ -16,7 +16,8 @@ This encapsulation allows you to segement the code and provide a "separation of 
 
 The object class allows you to easily copy the object class and resuse it in multiple projects (such as Expert Advisers).
 If you use the same object class in both Indicators and Expert Advisors, then you can be sure that the functionality is identical.
-If you use the same object in an Indicator and Expert Adviser, then you can see what the Expert Adviser has calculated to adjust the Settings.
+
+If you use the same object in an Indicator and Expert Adviser, then you can see what the Expert Adviser has calculated that will assist you in adjusting the EA Settings.
 
 Let me know what you think of them.
 
