@@ -231,9 +231,9 @@ namespace Alveo.UserCode
             {
                 Consolidation[indx] = HEMAvalue;     // Consolidation buffer gets HEMAvalue
             }
-            if (hema.trendChanged)                  // if trendDir changed from previous call
+            if (hema.stateChanged)                  // if trendDir changed from previous call
             {
-                switch (hema.prevTrendDir)          // place connecting HEMAvalue into proper buffer to connect the lines
+                switch (hema.prevState)          // place connecting HEMAvalue into proper buffer to connect the lines
                 {
                     case 1: // uptrend
                         UpTrend[indx] = HEMAvalue;
@@ -300,7 +300,9 @@ namespace Alveo.UserCode
             internal bool isFalling;
             internal int trendDir;
             internal int prevTrendDir;
+            internal int prevState;
             internal bool trendChanged;
+            internal bool stateChanged;
             internal double HEMAval;
 
             HEMAobj()
@@ -312,7 +314,9 @@ namespace Alveo.UserCode
                 isFalling = false;
                 trendDir = 0;
                 prevTrendDir = 0;
+                prevState = 0;
                 trendChanged = false;
+                stateChanged = false;
                 HEMAval = double.MinValue;
             }
 
@@ -335,8 +339,10 @@ namespace Alveo.UserCode
                 isRrising = false;
                 isFalling = false;
                 trendDir = 0;
+                prevState = 0;
                 prevTrendDir = 0;
                 trendChanged = false;
+                stateChanged = false;
             }
 
             internal double Calc(double thePrice)  // Calculate Indicator values
@@ -346,7 +352,9 @@ namespace Alveo.UserCode
                     throw new Exception("HEMAcalc: period < 1, invalid !!");
                 if (Threshold < 1e-10)
                     throw new Exception("HEMAcalc: Threshold < 1e-10, invalid !!");
-                prevTrendDir = trendDir;
+                if(trendDir != 0)
+                    prevTrendDir = trendDir;
+                prevState = trendDir;
                 ema1.Calc(thePrice);
                 ema2.Calc(thePrice);
                 double term3 = 2 * ema2.EMAval - ema1.EMAval;
@@ -355,6 +363,7 @@ namespace Alveo.UserCode
                 isFalling = ema3.isFalling;
                 trendDir = isRrising ? 1 : (isFalling ? -1 : 0);
                 trendChanged = (trendDir * prevTrendDir < 0);
+                stateChanged = (trendDir != prevState);
                 return HEMAval;
             }
         }
@@ -418,6 +427,8 @@ namespace Alveo.UserCode
                 prevEMA = EMAval;
                 isRrising = (diff > Threshold);
                 isFalling = (diff < -Threshold);
+                if (trendDir != 0)
+                    prevTrendDir = trendDir;
                 trendDir = isRrising ? 1 : (isFalling ? -1 : 0);
                 trendChanged = (trendDir * prevTrendDir < 0);
                 return EMAval;
