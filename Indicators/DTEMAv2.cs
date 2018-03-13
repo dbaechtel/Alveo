@@ -305,7 +305,6 @@ namespace Alveo.UserCode
             EMAobj EMA1;
             EMAobj EMA2;
             EMAobj EMA3;
-            bool dump = false;
             const string dataFileDir = "C:\\temp\\";
             System.IO.StreamWriter dfile = null;
 
@@ -335,11 +334,6 @@ namespace Alveo.UserCode
                 EMA1 = new EMAobj(Period, threshold);
                 EMA2 = new EMAobj(Period, threshold);
                 EMA3 = new EMAobj(Period, threshold);
-                if (dump)
-                {
-                    string msg = "thePrice,EMA1,EMA2,EMA3,DTEMAval,prevDTEMA,trendDir,prevTrendDir,trendChanged";
-                    dumpData(msg, false);
-                }
             }
 
             internal void Init(double thePrice)
