@@ -5,6 +5,9 @@ The source code for the indicators are a good study of how to write good Indicat
 
 EMA3 - a 3 color version of the Alveo EMA indicator.
 
+DTEMAv2 - version 2 od the Dual-Tripple EMA Indicator. 
+This indicator is the average of a Dual EMA and a Triple EMA for the best of both.
+
 HEMA - the Honest EMA indicator that uses the Hull Moving Average equation, substituting EMAs for the WMA functions.
 
 Look carefully at techniques like the encapsulation used in the EMAobj class in EMA3.
