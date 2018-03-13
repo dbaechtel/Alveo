@@ -22,3 +22,5 @@ If you use the same object in an Indicator and Expert Adviser, then you can see 
 Let me know what you think of them.
 
 dbaechtel@gmail.com
+
+
