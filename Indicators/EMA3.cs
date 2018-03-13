@@ -30,7 +30,7 @@ namespace Alveo.UserCode
     /// </summary>  
 
     [Serializable]
-    [Description("Alveo EMA Indicator v1.2")]
+    [Description("Alveo EMA Indicator v1.3")]
     public class EMA3 : IndicatorBase
     {
         #region Properties
@@ -231,9 +231,9 @@ namespace Alveo.UserCode
             {
                 Consolidation[indx] = EMAvalue;     // Consolidation buffer gets EMAvalue
             }
-            if (ema.trendChanged)                  // if trendDir changed from previous call
+            if (ema.stateChanged)                  // if trendDir changed from previous call
             {
-                switch (ema.prevTrendDir)          // place connecting EMAvalue into proper buffer to connect the lines
+                switch (ema.prevState)          // place connecting EMAvalue into proper buffer to connect the lines
                 {
                     case 1: // uptrend
                         UpTrend[indx] = EMAvalue;
@@ -298,7 +298,9 @@ namespace Alveo.UserCode
             internal bool isFalling;
             internal int trendDir;
             internal int prevTrendDir;
+            internal int prevState;
             internal bool trendChanged;
+            internal bool stateChanged;
             double K;
 
             internal EMAobj()
@@ -309,7 +311,9 @@ namespace Alveo.UserCode
                 isFalling = false;
                 trendDir = 0;
                 prevTrendDir = 0;
+                prevState = 0;
                 trendChanged = false;
+                stateChanged = false;
                 prevEMA = double.MinValue;
                 EMAval = double.MinValue;
                 K = 1.0;
@@ -327,8 +331,10 @@ namespace Alveo.UserCode
                 isRrising = false;
                 isFalling = false;
                 trendDir = 0;
+                prevState = 0;
                 prevTrendDir = 0;
                 trendChanged = false;
+                stateChanged = false;
                 prevEMA = thePrice;
                 EMAval = thePrice;
             }
@@ -336,9 +342,9 @@ namespace Alveo.UserCode
             internal double Calc(double thePrice)
             {
                 if (Period < 1)
-                    throw new Exception("EMA: period < 1, invalid !!");
+                    throw new Exception("EMAobj: period < 1, invalid !!");
                 if (Threshold < 1e-10)
-                    throw new Exception("EMA: Threshold < 1e-10, invalid !!");
+                    throw new Exception("EMAobj: Threshold < 1e-10, invalid !!");
                 if (prevEMA == double.MinValue)
                     prevEMA = thePrice;
                 //EMA = (Price[today] x K) + (EMA[prev] x (1 – K)); K = 2 / (N + 1)
@@ -347,8 +353,12 @@ namespace Alveo.UserCode
                 prevEMA = EMAval;
                 isRrising = (diff > Threshold);
                 isFalling = (diff < -Threshold);
+                if (trendDir != 0)
+                    prevTrendDir = trendDir;
+                prevState = trendDir;
                 trendDir = isRrising ? 1 : (isFalling ? -1 : 0);
                 trendChanged = (trendDir * prevTrendDir < 0);
+                stateChanged = (trendDir != prevState);
                 return EMAval;
             }
         }
