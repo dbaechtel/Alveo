@@ -3,6 +3,10 @@ I have posted the source code to 3 new Alveo Custom Indicators at https://github
 
 The source code for the indicators are a good study of how to write good Indicator code for Alveo.
 
+* ADXi - an improved version of the Alveo Average Directional Index (ADX) indicator.
+Alveo has an error where they divide the +DM and -DM by TR instead of the ATR as the ADX is defined,
+This ADXi indicator is corrected and seems to react quicker and with greater range than the Alveo version.
+
 * EMA3 - a 3 color version of the Alveo EMA indicator.
 
 * DTEMAv2 - version 2 of the Dual-Tripple EMA Indicator. 
