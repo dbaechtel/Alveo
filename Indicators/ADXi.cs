@@ -10,18 +10,22 @@ namespace Alveo.UserCode
     [Description("Average Directional Movement Indicator")]
     public class ADXi : IndicatorBase
     {
+        const string version = "ADXi version 1.2";
+
+        // arrays for indicator line buffers
         private readonly Array<double> _adxARR;
         private readonly Array<double> _minusDi;
         private readonly Array<double> _plusDi;
 
-        ADXobj adx;
+        ADXobj adx;     // internal ADX indicator class object
 
         public ADXi()
         {
-            indicator_buffers = 3;
-            IndicatorPeriod = 10;
-            indicator_chart_window = false;
+            indicator_buffers = 3;                      // 3 incator buffers for 3 lines on chart
+            IndicatorPeriod = 10;                       // default indicator Period
+            indicator_chart_window = false;             // separate indicator window
 
+            // define 3 indicator labels
             indicator_color1 = Colors.Blue;
             SetIndexLabel(0, string.Format("ADX({0})", IndicatorPeriod));
             indicator_color2 = Colors.Green;
@@ -29,22 +33,26 @@ namespace Alveo.UserCode
             indicator_color3 = Colors.Red;
             SetIndexLabel(2, "Minus_Di");
 
-            PriceType = PriceConstants.PRICE_CLOSE;
-            _adxARR = new Array<double>();
+            PriceType = PriceConstants.PRICE_CLOSE;     // defailt PriceType for indicator
+
+            _adxARR = new Array<double>();              // allocate 3 array buffers
             _plusDi = new Array<double>();
             _minusDi = new Array<double>();
         }
 
-        [Description("Period of the ADX Indicator")]
+        #region UserSettings
+        [Description("Period of the ADX Indicator in Bars. [ex: 10]")]
         [Category("Settings")]
         [DisplayName("Period")]
         public int IndicatorPeriod { get; set; }
 
-        [Description("Price type on witch ADX will be calculated")]
+        [Description("Price type with witch ADX will be calculated.")]
         [Category("Settings")]
         [DisplayName("Price type")]
         public PriceConstants PriceType { get; set; }
+        #endregion
 
+        // called by Alveo to Initialize the Indicator
         protected override int Init()
         {
             try
@@ -59,9 +67,9 @@ namespace Alveo.UserCode
                 SetIndexBuffer(1, _plusDi);
                 SetIndexBuffer(2, _minusDi);
 
-                adx = new ADXobj(IndicatorPeriod);
+                adx = new ADXobj(IndicatorPeriod);      // create ADX indicator object
             }
-            catch (Exception e)
+            catch (Exception e)     // if something goes wrong
             {
                 Print("ADXi Exception: " + e.Message);
                 Print("ADXi Exception: " + e.StackTrace);
@@ -70,48 +78,51 @@ namespace Alveo.UserCode
             return 0;
         }
 
+        // Called by Alveo every tick and every new bar
         protected override int Start()
         {
             try
             {
-                var pos = Bars - IndicatorCounted();
-                var data = GetHistory(Symbol, TimeFrame);
-                if (data.Count == 0 || Bars == 0 || pos < 1)
+                var pos = Bars - IndicatorCounted();                // how many bars to be processed
+                var data = GetHistory(Symbol, TimeFrame);           // get chart bars
+                if (data.Count == 0 || Bars == 0 || pos < 1)        // nothing to do
                     return 0;
-                var baseArray = GetPrice(GetHistory(Symbol, TimeFrame), PriceType);
 
-                var exp = 2 / (double)(IndicatorPeriod + 1);
-                if (pos >= data.Count)
-                    pos = data.Count - 1;
-                while (pos >= 0)
+                var baseArray = GetPrice(GetHistory(Symbol, TimeFrame), PriceType);     // get selected PriceType data into array
+
+                var exp = 2 / (double)(IndicatorPeriod + 1);        // calculate filter factor
+                if (pos >= data.Count)                              // if not enough data
+                    pos = data.Count - 1;                           // then process less bars
+                while (pos >= 0)                                    // process all of the requested bars
                 {
-                    if (pos >= Bars - 1)
+                    if (pos >= Bars - 1)                            // if not enough chart bars
                     {
-                        pos = Bars - 1;
-                        _plusDi[pos] = 0;
+                        pos = Bars - 1;                             // process less bars
+                        _plusDi[pos] = 0;                           // initialize buffer values
                         _minusDi[pos] = 0;
                         _adxARR[pos] = 0;
                     }
-                    else
+                    else  // Calculate ADX and update display buffers with results
                     {
                         adx.Calc(data[pos], _adxARR[pos + 1], _plusDi[pos + 1], _minusDi[pos + 1]);
                         _plusDi[pos] = adx._plusDi;
                         _minusDi[pos] = adx._minusDi;
                         _adxARR[pos] = adx._adx;
                     }
-                    pos--;
+                    pos--;      // next buffer position
                 }
             }
-            catch (Exception e)
+            catch (Exception e) // in case something goes wrong
             {
-                Print("ADXi Exception: " + e.Message);
-                Print("ADXi Exception: " + e.StackTrace);
+                Print("ADXi Exception: " + e.Message);      // tells you what
+                Print("ADXi Exception: " + e.StackTrace);   // tells you where
             }
             return 0;
         }
 
         public override bool IsSameParameters(params object[] values)
         {
+            // have any of the User Settings changed
             if (values.Length != 4)
                 return false;
             if ((values[0] != null && Symbol == null) || (values[0] == null && Symbol != null))
@@ -128,8 +139,22 @@ namespace Alveo.UserCode
             return true;
         }
 
+        [Description("Parameters order Symbol, TimeFrame")]
+        public override void SetIndicatorParameters(params object[] values)     // Set Indicator values from cache
+        {
+            if (values.Length != 4)
+                throw new ArgumentException("Invalid parameters number");
+
+            Symbol = (string)values[0];
+            TimeFrame = (int)values[1];
+            IndicatorPeriod = (int)values[2];
+            PriceType = (PriceConstants)values[3];
+        }
+
+        // ADX indicator clas object
         internal class ADXobj
         {
+            // variables
             double pdm;
             double mdm;
             double tr;
@@ -147,12 +172,12 @@ namespace Alveo.UserCode
             int counter;
             Bar prevBar;
 
-            internal ADXobj()
+            internal ADXobj()   // class constuctor
             {
-
+                // nothing to do
             }
 
-            internal ADXobj(int period) : this()
+            internal ADXobj(int period) : this()    // parameterized construdtor
             {
                 IndicatorPeriod = period;
                 Init();
@@ -160,7 +185,8 @@ namespace Alveo.UserCode
 
             internal void Init(Bar theBar = null)
             {
-                exp = Math.Max(Math.Min(2 / (double)(IndicatorPeriod + 1), 1), 0);
+                // initialize variables
+                exp = Math.Max(Math.Min(2 / (double)(IndicatorPeriod + 1), 1), 0);  // filter factor
                 atr = 0;
                 tr = 0;
                 counter = 0;
@@ -172,12 +198,13 @@ namespace Alveo.UserCode
 
             internal double Calc(Bar theBar, double prevAdx, double prevPlusDi, double prevMinusDi)
             {
-                if (prevBar == null)
+                // calculate ADX value 
+                if (prevBar == null)    // no prevBar, initialize
                 {
                     Init(theBar);
                     return 0;
                 }
-                counter = Math.Max(++counter, IndicatorPeriod);
+                counter = Math.Max(++counter, IndicatorPeriod); // for atr calculation
                 price_low = (double)theBar.Low;
                 price_high = (double)theBar.High;
                 pdm = price_high - (double)prevBar.High;
@@ -195,14 +222,13 @@ namespace Alveo.UserCode
                     pdm = 0;
                 else if (mdm < pdm)
                     mdm = 0;
-
                 var num1 = Math.Abs(price_high - price_low);
                 var num2 = Math.Abs(price_high - (double)prevBar.Close);
                 var num3 = Math.Abs(price_low - (double)prevBar.Close);
-                tr = Math.Max(num1, num2);
+                tr = Math.Max(num1, num2);                          // TR
                 tr = Math.Max(tr, num3);
-                atr = (atr * (counter - 1) + tr) / counter;
-                if (tr.Equals(0))
+                atr = (atr * (counter - 1) + tr) / counter;         // ATR
+                if (atr <= 0)       // avoid division by zero
                 {
                     plusSdi = 0;
                     minusSdi = 0;
@@ -215,15 +241,14 @@ namespace Alveo.UserCode
 
                 _plusDi = Math.Max(Math.Min(plusSdi * exp + prevPlusDi * (1 - exp), 100), 0);
                 _minusDi = Math.Max(Math.Min(minusSdi * exp + prevMinusDi * (1 - exp), 100), 0);
-
                 var div = Math.Abs(_plusDi + _minusDi);
-                if (div <= 0)
+                if (div <= 0)       // avoid division by zero
                     temp = 0;
                 else
                     temp = 100 * (Math.Abs(_plusDi - _minusDi) / div);
-                _adx = Math.Max(Math.Min(temp * exp + prevAdx * (1 - exp), 100), 0);
+                _adx = Math.Max(Math.Min(temp * exp + prevAdx * (1 - exp), 100), 0);    // ADX value
                 prevBar = theBar;
-                return 0;
+                return _adx;
             }
         }
     }
