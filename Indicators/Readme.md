@@ -4,8 +4,15 @@ I have posted the source code to 3 new Alveo Custom Indicators at https://github
 The source code for the indicators are a good study of how to write good Indicator code for Alveo.
 
 * ADXi - an improved version of the Alveo Average Directional Index (ADX) indicator.
-Alveo has an error where they divide the +DM and -DM by TR instead of the ATR as the ADX is defined,
+Alveo has an error where they divide the +DM and -DM by TR instead of the ATR as the ADX is defined.
 This ADXi indicator is corrected and seems to react quicker and with greater range than the Alveo version.
+This indicator source has:
+  * code comments to explain what is happening
+  * exception handling
+  * division by zero avoidance
+  * range bounding
+  * correction od Alveo quick fix to ADX code
+  * ADX Class object encapsulation
 
 * EMA3 - a 3 color version of the Alveo EMA indicator.
 
