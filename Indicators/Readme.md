@@ -11,7 +11,7 @@ This indicator source has:
   * exception handling
   * division by zero avoidance
   * range bounding
-  * correction od Alveo quick fix to ADX code
+  * correction of Alveo quick fix to ADX code
   * ADX Class object encapsulation
 
 * EMA3 - a 3 color version of the Alveo EMA indicator.
