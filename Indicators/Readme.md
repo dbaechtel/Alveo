@@ -1,5 +1,5 @@
 
-I have posted the source code to 3 new Alveo Custom Indicators at https://github.com/dbaechtel/Alveo/tree/master/Indicators.
+I have posted the source code to several new Alveo Custom Indicators at https://github.com/dbaechtel/Alveo/tree/master/Indicators.
 
 The source code for the indicators are a good study of how to write good Indicator code for Alveo.
 
