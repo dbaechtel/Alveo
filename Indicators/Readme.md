@@ -21,6 +21,8 @@ This indicator is the average of a Dual EMA and a Triple EMA for the best of bot
 
 * HEMA - the Honest EMA indicator that uses the Hull Moving Average equation, substituting EMAs for the WMA functions.
 
+* eSTO3 - is an HEMA based Stochastic Indicator that has much less noisy signal than the traditional Stochastic indicator.
+
 Look carefully at techniques like the encapsulation used in the EMAobj class in EMA3.
 This encapsulation allows you to include all of the variables and methods used by the EMA into a single object class.
 This encapsulation allows you to segement the code and provide a "separation of concerns", which is helpful.
