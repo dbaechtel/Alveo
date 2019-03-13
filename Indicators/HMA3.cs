@@ -1,4 +1,14 @@
-﻿using System;
+ /*
+ * * LEGAL DISCLAIMER * *
+
+The currency markets can do ANYTHING at ANY TIME.
+No one can guarantee or forecast how these results will perform or behave in future markets.
+Anyone who uses this product or this information is responsible for deciding If, Where, When and How this product and information are used.
+Anyone who uses this product or this information is responsible and liable for any outcomes that might result from the use of this product or this information.
+There is no warranty or guarantee provided or implied for this product or this information for any purpose.
+ */
+
+using System;
 using System.ComponentModel;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,9 +51,9 @@ namespace Alveo.UserCode
         public HMA3()
         {
             // Basic indicator initialization. Don't use this constructor to calculate values
-            indicator_buffers = 3;
-            indicator_chart_window = true;
             period = 21;
+            indicator_chart_window = true;
+            indicator_buffers = 3;
             indicator_width1 = 2;
             indicator_width2 = 2;
             indicator_width3 = 2;
@@ -90,9 +100,9 @@ namespace Alveo.UserCode
                 SetIndexStyle(0, DRAW_LINE, STYLE_SOLID);
                 SetIndexLabel(0, "HMA3(" + period + ").Bull");
                 SetIndexStyle(1, DRAW_LINE, STYLE_SOLID);
-                SetIndexLabel(1, "HMA3(" + period + ").Bear");
-                SetIndexStyle(2, DRAW_LINE, STYLE_SOLID, 2, Colors.Lime);
-                SetIndexLabel(2, "HMA3(" + period + ").Mixed");
+                SetIndexLabel(1, "Bear");
+                SetIndexStyle(2, DRAW_LINE, STYLE_SOLID);
+                SetIndexLabel(2, "Mixed");
                 IndicatorShortName("Hull Moving Average(" + period + ")");
                 hma = new HMAobj(this, period, SlopeThreshold);
                 b = null;
@@ -418,13 +428,13 @@ namespace Alveo.UserCode
                     price = (double)b.Low;
                     break;
                 case (int)PriceTypes.PRICE_MEDIAN:
-                    price = Math.Round((double)(b.High + b.Low) / 2);
+                    price = Math.Round((double)(b.High + b.Low) / 2, 5);
                     break;
                 case (int)PriceTypes.PRICE_TYPICAL:
-                    price = Math.Round((double)(b.High + b.Low + b.Close) / 3);
+                    price = Math.Round((double)(b.High + b.Low + b.Close) / 3, 5);
                     break;
                 case (int)PriceTypes.PRICE_WEIGHTED:
-                    price = Math.Round((double)(b.High + b.Low + 2 * b.Close) / 4);
+                    price = Math.Round((double)(b.High + b.Low + 2 * b.Close) / 4, 5);
                     break;
                 case (int)PriceTypes.PRICE_OHLC:
                     price = Math.Round((double)(b.Open + b.High + b.Low + b.Close) / 4, 5);
